@@ -2,7 +2,7 @@
     "database": {
         "client": "mysql",
         "connection": {
-            "host"     : "127.0.0.1",
+            "host"     : "http://blog.univthink.com",
             "user"     : "root",
             "password" : "",
             "database" : "ghost"

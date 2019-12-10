@@ -1,7 +1,7 @@
 {
     "url": "http://localhost:2368",
     "server": {
-        "host": "127.0.0.1",
+        "host": "http://blog.univthink.com",
         "port": 2368
     },
     "admin": {
