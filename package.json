@@ -21,12 +21,12 @@
   "license": "MIT",
   "main": "./core/index",
   "scripts": {
-    "start": "NODE_ENV=production node index",
+    "start": "npm run setup && NODE_ENV=production node index",
     "dev": "DEBUG=ghost:* grunt dev",
     "test": "grunt validate",
     "ci": "grunt validate --verbose",
     "ci:regression": "grunt test-regression --verbose",
-    "setup": "yarn install && knex-migrator init && grunt symlink && grunt init || true",
+    "setup": "yarn install && knex-migrator init && grunt symlink && grunt init --force || true",
     "lint:server": "eslint --ignore-path .eslintignore 'core/server/**/*.js' 'core/*.js' '*.js'",
     "lint:frontend": "eslint --ignore-path .eslintignore 'core/frontend/**/*.js'",
     "lint:test": "eslint -c core/test/.eslintrc.json --ignore-path core/test/.eslintignore 'core/test/**/*.js'",
@@ -35,7 +35,7 @@
     "fixmodulenotdefined": "yarn cache clean && cd core/client && rm -rf node_modules tmp dist && yarn && cd ../../"
   },
   "engines": {
-    "node": "^8.16.0 || ^10.13.0 || 12.10",
+    "node": "^8.16.0 || ^10.13.0",
     "cli": "^1.12.0"
   },
   "dependencies": {
