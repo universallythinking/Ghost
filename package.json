@@ -22,7 +22,6 @@
   "main": "./core/index",
   "scripts": {
     "start1": "node index",
-    "preinstall": "node core/server/utils/npm/preinstall.js",
     "start": "NODE_ENV=production node index.js",
     "dev": "DEBUG=ghost:* grunt dev",
     "test": "grunt validate",
