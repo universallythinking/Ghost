@@ -47,7 +47,7 @@ const corsOptionsDelegate = function corsOptionsDelegate(req, callback) {
     // https://url.spec.whatwg.org/#url-class
 
     // allow all localhost and 127.0.0.1 requests no matter the port
-    if (originUrl.hostname === 'localhost' || originUrl.hostname === '0.0.0.0') {
+    if (originUrl.hostname === 'localhost' || originUrl.hostname === '127.0.0.1') {
         corsOptions.origin = true;
     }
 
