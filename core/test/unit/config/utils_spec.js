@@ -1,4 +1,4 @@
-var should = require('should'), // jshint ignore:line
+var should = require('should'),
     configUtils = require('../../../server/config/utils');
 
 describe('UNIT: Config utils', function () {
@@ -41,7 +41,7 @@ describe('UNIT: Config utils', function () {
             changedKey.length.should.eql(0);
         });
 
-        it('ensure we don\' change absolute paths', function () {
+        it('ensure we don\'t change absolute paths', function () {
             var changedKey = [],
                 obj = {
                     database: {

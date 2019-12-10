@@ -1,10 +1,8 @@
-var should = require('should'), // jshint ignore:line
+var should = require('should'),
     path = require('path'),
     rewire = require('rewire'),
     _ = require('lodash'),
     configUtils = require('../../utils/configUtils');
-
-// jscs:disable requireDotNotation
 
 describe('Config', function () {
     before(function () {
@@ -22,6 +20,10 @@ describe('Config', function () {
             originalEnv = _.clone(process.env);
             originalArgv = _.clone(process.argv);
             config = rewire('../../../server/config');
+
+            // we manually call `loadConf` in the tests and we need to ensure that the minimum
+            // required config properties are available
+            process.env.paths__contentPath = 'content/';
         });
 
         afterEach(function () {
@@ -30,7 +32,7 @@ describe('Config', function () {
         });
 
         it('env parameter is stronger than file', function () {
-            process.env['database__client'] = 'test';
+            process.env.database__client = 'test';
 
             customConfig = config.loadNconf({
                 baseConfigPath: path.join(__dirname, '../../utils/fixtures/config'),
@@ -41,7 +43,7 @@ describe('Config', function () {
         });
 
         it('argv is stronger than env parameter', function () {
-            process.env['database__client'] = 'test';
+            process.env.database__client = 'test';
             process.argv[2] = '--database:client=stronger';
 
             customConfig = config.loadNconf({
@@ -53,7 +55,7 @@ describe('Config', function () {
         });
 
         it('argv or env is NOT stronger than overrides', function () {
-            process.env['paths__corePath'] = 'try-to-override';
+            process.env.paths__corePath = 'try-to-override';
             process.argv[2] = '--paths:corePath=try-to-override';
 
             customConfig = config.loadNconf({
@@ -116,7 +118,7 @@ describe('Config', function () {
 
     describe('Storage', function () {
         it('should default to local-file-store', function () {
-            configUtils.config.get('paths').should.have.property('internalStoragePath', path.join(configUtils.config.get('paths').corePath, '/server/storage/'));
+            configUtils.config.get('paths').should.have.property('internalStoragePath', path.join(configUtils.config.get('paths').corePath, '/server/adapters/storage/'));
 
             configUtils.config.get('storage').should.have.property('active', 'LocalFileStorage');
         });

@@ -1,5 +1,4 @@
 {
-    "url": "http://my-ghost-blog.com",
     "database": {
         "client": "mysql",
         "connection": {
@@ -8,10 +7,6 @@
             "password" : "",
             "database" : "ghost"
         }
-    },
-    "auth": {
-        "type": "ghost",
-        "url": "https://auth.ghost.org"
     },
     "paths": {
         "contentPath": "content/"

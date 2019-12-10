@@ -6,7 +6,6 @@ App = ghostBookshelf.Model.extend({
     tableName: 'apps',
 
     onSaving: function onSaving(newPage, attr, options) {
-        /*jshint unused:false*/
         var self = this;
 
         ghostBookshelf.Model.prototype.onSaving.apply(this, arguments);
@@ -35,7 +34,7 @@ App = ghostBookshelf.Model.extend({
     * @return {Array} Keys allowed in the `options` hash of the model's method.
     */
     permittedOptions: function permittedOptions(methodName) {
-        var options = ghostBookshelf.Model.permittedOptions(),
+        var options = ghostBookshelf.Model.permittedOptions.call(this, methodName),
 
             // whitelists for the `options` hash argument on methods, by method name.
             // these are the only options that can be passed to Bookshelf / Knex.

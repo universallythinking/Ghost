@@ -1,49 +1,13 @@
-var _               = require('lodash'),
-    url             = require('url'),
-    moment          = require('moment'),
-    config          = require('../../server/config'),
-    schema          = require('../../server/data/schema').tables,
-    ApiRouteBase    = '/ghost/api/v0.1/',
-    host            = config.get('server').host,
-    port            = config.get('server').port,
-    protocol        = 'http://',
-    expectedProperties = {
-        // API top level
-        posts:         ['posts', 'meta'],
-        tags:          ['tags', 'meta'],
-        users:         ['users', 'meta'],
-        settings:      ['settings', 'meta'],
-        subscribers:   ['subscribers', 'meta'],
-        roles:         ['roles'],
-        pagination:    ['page', 'limit', 'pages', 'total', 'next', 'prev'],
-        slugs:         ['slugs'],
-        slug:          ['slug'],
-        // object / model level
-        // Post API swaps author_id to author, and always returns a computed 'url' property
-        post:        _(schema.posts).keys().without('author_id').concat('author', 'url').value(),
-        // User API always removes the password field
-        user:        _(schema.users).keys().without('password').without('ghost_auth_access_token').value(),
-        // Tag API swaps parent_id to parent
-        tag:         _(schema.tags).keys().without('parent_id').concat('parent').value(),
-        setting:     _.keys(schema.settings),
-        subscriber: _.keys(schema.subscribers),
-        accesstoken: _.keys(schema.accesstokens),
-        role:        _.keys(schema.roles),
-        permission:  _.keys(schema.permissions),
-        notification: ['type', 'message', 'status', 'id', 'dismissible', 'location'],
-        theme:        ['name', 'package', 'active'],
-        themes:       ['themes'],
-        invites:      _(schema.invites).keys().without('token').value()
-    };
-
-function getApiQuery(route) {
-    return url.resolve(ApiRouteBase, route);
-}
-
-function getApiURL(route) {
-    var baseURL = url.resolve(protocol + host + ':' + port, ApiRouteBase);
-    return url.resolve(baseURL, route);
-}
+const _ = require('lodash');
+const url = require('url');
+const moment = require('moment');
+const DataGenerator = require('./fixtures/data-generator');
+const config = require('../../server/config');
+const common = require('../../server/lib/common');
+const sequence = require('../../server/lib/promise/sequence');
+const host = config.get('server').host;
+const port = config.get('server').port;
+const protocol = 'http://';
 
 function getURL() {
     return protocol + host;
@@ -78,21 +42,87 @@ function checkResponseValue(jsonResponse, expectedProperties) {
     providedProperties.length.should.eql(expectedProperties.length);
 }
 
-function checkResponse(jsonResponse, objectType, additionalProperties, missingProperties) {
-    var checkProperties = expectedProperties[objectType];
+// @TODO: support options pattern only, it's annoying to call checkResponse(null, null, null, something)
+function checkResponse(jsonResponse, objectType, additionalProperties, missingProperties, onlyProperties, options) {
+    options = options || {};
+
+    let checkProperties = options.public ? (this.expectedProperties[objectType].public || this.expectedProperties[objectType]) : (this.expectedProperties[objectType].default || this.expectedProperties[objectType]);
+
+    checkProperties = onlyProperties ? onlyProperties : checkProperties;
     checkProperties = additionalProperties ? checkProperties.concat(additionalProperties) : checkProperties;
     checkProperties = missingProperties ? _.xor(checkProperties, missingProperties) : checkProperties;
 
     checkResponseValue(jsonResponse, checkProperties);
 }
 
-module.exports = {
-    getApiURL: getApiURL,
-    getApiQuery: getApiQuery,
-    getSigninURL: getSigninURL,
-    getAdminURL: getAdminURL,
-    getURL: getURL,
-    checkResponse: checkResponse,
-    checkResponseValue: checkResponseValue,
-    isISO8601: isISO8601
+/**
+ * This function manages the work of ensuring we have an overridden owner user, and grabbing an access token
+ *
+ * @TODO make this do the DB init as well
+ */
+const doAuth = (apiOptions) => {
+    return function doAuthInner() {
+        let API_URL = arguments[0];
+        let request = arguments[1];
+
+        // Remove API_URL & request from this list
+        let options = Array.prototype.slice.call(arguments, 2);
+
+        // No DB setup, but override the owner
+        options = _.merge({'owner:post': true}, _.transform(options, function (result, val) {
+            if (val) {
+                result[val] = true;
+            }
+        }));
+
+        const fixtureOps = apiOptions.getFixtureOps(options);
+
+        return sequence(fixtureOps).then(function () {
+            return login(request, API_URL);
+        });
+    };
+};
+
+const login = (request, API_URL) => {
+    // CASE: by default we use the owner to login
+    if (!request.user) {
+        request.user = DataGenerator.Content.users[0];
+    }
+
+    return new Promise(function (resolve, reject) {
+        request.post(API_URL)
+            .set('Origin', config.get('url'))
+            .send({
+                grant_type: 'password',
+                username: request.user.email,
+                password: 'Sl1m3rson99'
+            })
+            .then(function then(res) {
+                if (res.statusCode === 302) {
+                    // This can happen if you already have an instance running e.g. if you've been using Ghost CLI recently
+                    return reject(new common.errors.GhostError({
+                        message: 'Ghost is redirecting, do you have an instance already running on port 2369?'
+                    }));
+                } else if (res.statusCode !== 200 && res.statusCode !== 201) {
+                    return reject(new common.errors.GhostError({
+                        message: res.body.errors[0].message
+                    }));
+                }
+
+                resolve(res.headers['set-cookie']);
+            }, reject);
+    });
+};
+
+module.exports = (options = {}) => {
+    return {
+        getSigninURL: getSigninURL,
+        getAdminURL: getAdminURL,
+        doAuth: doAuth(options),
+        login: login,
+        getURL: getURL,
+        checkResponse: checkResponse,
+        checkResponseValue: checkResponseValue,
+        isISO8601: isISO8601
+    };
 };
