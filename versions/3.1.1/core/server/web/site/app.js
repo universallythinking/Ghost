@@ -46,7 +46,7 @@ const corsOptionsDelegate = function corsOptionsDelegate(req, callback) {
     // The class constructor will either throw a TypeError or return a URL object
     // https://url.spec.whatwg.org/#url-class
 
-    // allow all localhost and 127.0.0.1 requests no matter the port
+    // allow all localhost and 0.0.0.0 requests no matter the port
     if (originUrl.hostname === 'localhost' || originUrl.hostname === '0.0.0.0') {
         corsOptions.origin = true;
     }
