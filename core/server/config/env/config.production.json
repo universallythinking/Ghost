@@ -1,12 +1,12 @@
 {
     "database": {
-        "client": "mysql",
+        "client": "postgres",
         "connection": {
-            "host": "y5s2h87f6ur56vae.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
-            "user": "i5o9n0w12q90h1p0",
-            "password": "a63eu4r1ygsd799i",
-            "database": "wj9oz86pe2va29zh"
-          }
+            "host": "ec2-174-129-255-26.compute-1.amazonaws.com",
+            "user": "chpgptnlhsrfxn",
+            "password": "7166a1261af290315f7261e9867730916970d7de6bbd334b09f59f6f4d89f1ba",
+            "database": "d52lko1mc06944",
+            "port": "5432"
     },
     "paths": {
         "contentPath": "content/"
