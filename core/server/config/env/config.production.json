@@ -2,7 +2,7 @@
     "database": {
         "client": "mysql",
         "connection": {
-            "host": "mysql://b40c4e1fb7be79:2c3aab06@us-cdbr-iron-east-05.cleardb.net/heroku_a3992e00cc74907?reconnect=true",
+            "host": "https://b40c4e1fb7be79:2c3aab06@us-cdbr-iron-east-05.cleardb.net/heroku_a3992e00cc74907?reconnect=true",
             "user": "b42747c70fb675",
             "password": "02890a74",
             "database": "cleardb-polished-36320"
