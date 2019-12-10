@@ -4,13 +4,13 @@
         "port": 2369
     },
     "database": {
-        "client": "mysql",
+        "client": "postgres",
         "connection": {
-            "host"     : "127.0.0.1",
-            "user"     : "root",
-            "password" : "",
-            "database" : "ghost_testing"
-        }
+            "host": "ec2-174-129-255-26.compute-1.amazonaws.com",
+            "user": "chpgptnlhsrfxn",
+            "password": "7166a1261af290315f7261e9867730916970d7de6bbd334b09f59f6f4d89f1ba",
+            "database": "d52lko1mc06944",
+            "port": "5432"
     },
     "logging": {
         "level": "fatal"
