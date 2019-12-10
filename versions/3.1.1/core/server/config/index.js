@@ -3,7 +3,7 @@ var Nconf = require('nconf'),
     _debug = require('ghost-ignition').debug._base,
     debug = _debug('ghost:config'),
     localUtils = require('./utils'),
-    env = process.env.NODE_ENV || 'development',
+    env = process.env.NODE_ENV || 'production',
     _private = {};
 
 _private.loadNconf = function loadNconf(options) {

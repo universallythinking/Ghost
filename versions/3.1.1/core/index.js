@@ -5,7 +5,7 @@ const common = require('./server/lib/common');
 const GhostServer = require('./server/ghost-server');
 
 // Set the default environment to be `development`
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 function makeGhost(options) {
     options = options || {};
